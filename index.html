@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>报价雷达 QuoteRadar · 两份报价，8 秒看完该谈什么</title>
+<meta name="description" content="把两份供应商报价拖进来，自动找出涨价项、漏报项与异常，按影响金额排好议价优先级。" />
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+<div class="bg-grid" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="brand" href="#top">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="12" stroke="currentColor" stroke-width="1.4" opacity=".45"/>
+        <circle cx="16" cy="16" r="7" stroke="currentColor" stroke-width="1.4" opacity=".7"/>
+        <circle cx="16" cy="16" r="2.2" fill="currentColor"/>
+        <path d="M16 16 L25.2 8.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </span>
+    <span class="brand-text">报价雷达<em>QuoteRadar</em></span>
+  </a>
+  <div class="nav-right">
+    <span class="chip chip-mint">效率工具</span>
+    <a class="nav-link" href="#method">评审口径</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <p class="eyebrow">采购比价 · 纯本地运行 · 数据不上传</p>
+    <h1>两份报价，<span class="hl">8 秒</span>看完该谈什么</h1>
+    <p class="lede">
+      把上期与本期供应商报价丢进来，自动找出涨价项、漏报项和异常，
+      按影响金额排出议价优先级，直接生成可发出去的议价清单。
+    </p>
+    <div class="hero-meta">
+      <span>无需登录</span>
+      <span>无需 API Key</span>
+      <span>CSV / 粘贴表格均可</span>
+    </div>
+  </section>
+
+  <section class="panel import-panel" id="import">
+    <div class="panel-head">
+      <h2><span class="step">01</span>导入两份报价</h2>
+      <button class="ghost-btn" id="loadSampleBtn" type="button">一键载入示例数据</button>
+    </div>
+
+    <div class="drop-grid">
+      <div class="dropzone" id="dz-a" data-side="a">
+        <div class="dz-top">
+          <span class="dz-label">基准报价 A</span>
+          <span class="dz-sub">上期价格 / 供应商 A</span>
+        </div>
+        <div class="dz-empty">
+          <svg class="dz-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <rect x="8" y="10" width="32" height="28" rx="4" stroke="currentColor" stroke-width="1.6" opacity=".55"/>
+            <path d="M24 30V20m0 0-4.5 4.5M24 20l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p class="dz-title">拖入 CSV，或点击选择文件</p>
+          <p class="dz-tip">列名含「物料编码 / 单价 / 数量」即可自动识别</p>
+          <div class="dz-actions">
+            <button class="mini-btn" type="button" data-sample="a">载入示例</button>
+            <label class="mini-btn">
+              选择文件
+              <input type="file" accept=".csv,.txt,.tsv" hidden data-file="a" />
+            </label>
+          </div>
+        </div>
+        <div class="dz-loaded" hidden>
+          <div class="dz-file">
+            <span class="dz-name"></span>
+            <span class="dz-rows"></span>
+          </div>
+          <div class="dz-cols"></div>
+          <div class="dz-actions">
+            <button class="mini-btn" type="button" data-reset="a">重新选择</button>
+            <button class="mini-btn" type="button" data-sample="a">换成示例</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="dropzone" id="dz-b" data-side="b">
+        <div class="dz-top">
+          <span class="dz-label">本期报价 B</span>
+          <span class="dz-sub">新价格 / 供应商 B</span>
+        </div>
+        <div class="dz-empty">
+          <svg class="dz-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <rect x="8" y="10" width="32" height="28" rx="4" stroke="currentColor" stroke-width="1.6" opacity=".55"/>
+            <path d="M24 30V20m0 0-4.5 4.5M24 20l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p class="dz-title">拖入 CSV，或点击选择文件</p>
+          <p class="dz-tip">也支持从 Excel 直接复制粘贴</p>
+          <div class="dz-actions">
+            <button class="mini-btn" type="button" data-sample="b">载入示例</button>
+            <label class="mini-btn">
+              选择文件
+              <input type="file" accept=".csv,.txt,.tsv" hidden data-file="b" />
+            </label>
+          </div>
+        </div>
+        <div class="dz-loaded" hidden>
+          <div class="dz-file">
+            <span class="dz-name"></span>
+            <span class="dz-rows"></span>
+          </div>
+          <div class="dz-cols"></div>
+          <div class="dz-actions">
+            <button class="mini-btn" type="button" data-reset="b">重新选择</button>
+            <button class="mini-btn" type="button" data-sample="b">换成示例</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="import-status" id="importStatus">
+      <span class="status-dot"></span>
+      <span id="statusText">还没有导入数据，点上方「一键载入示例数据」可直接体验</span>
+    </div>
+
+    <div class="panel-foot">
+      <button class="primary-btn" id="runBtn" type="button" disabled>
+        开始比对
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <p class="hint" id="runHint">先载入两份报价，按钮才会亮起</p>
+    </div>
+  </section>
+
+  <section class="results" id="results" hidden>
+    <div class="insight" id="insight"></div>
+
+    <div class="kpi-grid" id="kpiGrid"></div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2><span class="step">02</span>差异明细</h2>
+        <div class="export-group">
+          <button class="ghost-btn" id="exportCsvBtn" type="button">导出 CSV</button>
+          <button class="ghost-btn" id="exportMdBtn" type="button">导出报告</button>
+          <button class="ghost-btn" id="copyBtn" type="button">复制议价清单</button>
+        </div>
+      </div>
+      <div class="filters" id="filters">
+        <button class="filter is-active" data-filter="all" type="button">全部 <b>0</b></button>
+        <button class="filter" data-filter="up" type="button">涨价 <b>0</b></button>
+        <button class="filter" data-filter="down" type="button">降价 <b>0</b></button>
+        <button class="filter" data-filter="new" type="button">新增 <b>0</b></button>
+        <button class="filter" data-filter="missing" type="button">漏报 <b>0</b></button>
+        <button class="filter" data-filter="risk" type="button">有异常 <b>0</b></button>
+      </div>
+      <div class="table-wrap">
+        <table class="diff-table">
+          <thead>
+            <tr>
+              <th>状态</th>
+              <th>物料编码</th>
+              <th>名称</th>
+              <th>单位</th>
+              <th class="num">A 价</th>
+              <th class="num">B 价</th>
+              <th class="num">变动</th>
+              <th class="num sortable" data-sort="pct">变动率</th>
+              <th class="num">数量</th>
+              <th class="num sortable is-sorted" data-sort="impact">影响金额</th>
+              <th>标记</th>
+            </tr>
+          </thead>
+          <tbody id="diffBody"></tbody>
+        </table>
+      </div>
+      <p class="table-empty" id="tableEmpty" hidden>当前筛选下没有条目</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2><span class="step">03</span>影响金额 Top 10</h2>
+        <span class="panel-note">红色为涨，绿色为降</span>
+      </div>
+      <div class="chart" id="chart"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2><span class="step">04</span>议价建议</h2>
+        <span class="panel-note">按影响金额排序，只列前 5 条</span>
+      </div>
+      <div class="advice-list" id="adviceList"></div>
+    </div>
+
+    <p class="footnote">
+      计算口径：影响金额 =（B 价 − A 价）× 数量；数量优先取 B 表，缺失时取 A 表，均缺失按 1 计。
+      「预计可谈金额」只统计涨幅 ≥ 5% 的条目，按回到 A 价测算，属于理论上限，实际以谈判结果为准。
+      所有数据仅在当前浏览器内计算，不上传、不保存。
+    </p>
+  </section>
+
+  <section class="method" id="method">
+    <h2>评审 90 秒路径</h2>
+    <div class="method-grid">
+      <article class="method-card">
+        <span class="method-no">01</span>
+        <h3>点一下示例</h3>
+        <p>页面自带两份 28 行真实结构示例报价，无需准备文件，首屏立刻有数据。</p>
+      </article>
+      <article class="method-card">
+        <span class="method-no">02</span>
+        <h3>点「开始比对」</h3>
+        <p>本地引擎 1 秒内完成匹配、异常判定与金额测算，结果全部可解释。</p>
+      </article>
+      <article class="method-card">
+        <span class="method-no">03</span>
+        <h3>看三件事</h3>
+        <p>总价变化、Top 3 影响项、以及可直接复制发出的议价清单。</p>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <span>报价雷达 QuoteRadar</span>
+  <span>静态页面 · 本地计算 · 数据不出浏览器</span>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="assets/app.js" defer></script>
+</body>
+</html>
